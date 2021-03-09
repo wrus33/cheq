@@ -29,10 +29,13 @@ const useStyles = makeStyles({
     },
   });
 
+
+
 export default function Onboarding() {
 
     //States
     const [sellers, setSellers] = useState([]);
+
 
     //Constants
     const db = firebase.firestore();
@@ -51,32 +54,14 @@ export default function Onboarding() {
             });
     }, [db]);
 
+
     return (
         //<>{sellers.map(seller => seller.value.name)}</>
         <Box className={classes.root}>
             <Typography className={classes.headerWelcome} variant="h1">Welcome to cheqOS.</Typography>
-            <Typography className={classes.onboardPrompt} variant="h3">What is the name of your business?</Typography>
-            <Box className={classes.onboardHelper} fontStyle="italic"><Typography fontStyle="italic" variant="h5">(You can use your own name if operating as an individual.)</Typography></Box>
-            <div className={classes.form}>
-                <TextField
-                    className={classes.formElement}
-                    id="standard-helperText"
-                    required
-                    label="Required"
-                    helperText="You can change this at any time."
-                    variant="outlined"
-                    /><br/>
-                <div className={classes.textRight}>
-                    <Button
-                    variant="contained"
-                    color="primary"
-                // onClick={handleNext}
-                    className={classes.button}
-                >Next</Button>
-                </div> 
-            </div>
             
-            
+            <OnboardingForm />
+        
         </Box>
         
 
@@ -84,4 +69,92 @@ export default function Onboarding() {
 
 }
 
+function OnboardingForm() {
+    const classes = useStyles();
 
+    const [step, setStep] = useState(0);
+
+    const [businessName, setBusinessName] = useState('NEW BUSINESS');
+    const [email, setEmail] = useState('test@test.com');
+    const [password, setPassword] = useState('testing');
+
+    const handleNext = () => {
+        let newStep = step + 1;
+        setStep(newStep);
+    }
+
+    function signUp() {
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            // Signed in 
+            var user = userCredential.user;
+            // ...
+        })
+        .catch((error) => {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // ..
+        });
+    }
+
+    return (
+        <div>
+            {
+                step == 0 &&
+                (
+                    <>
+                   <Typography className={classes.onboardPrompt} variant="h3">What is the name of your business?</Typography>
+                        <Box className={classes.onboardHelper} fontStyle="italic"><Typography fontStyle="italic" variant="h5">(You can use your own name if operating as an individual.)</Typography></Box>
+                        <div className={classes.form}>
+                            <TextField
+                                className={classes.formElement}
+                                required
+                                label="Required"
+                                helperText="You can change this at any time."
+                                variant="outlined"
+                                value={businessName}
+                                onChange={e => setBusinessName(e.target.value)}
+                                /><br/>
+                    </div>  </>
+                )
+            }
+        
+        {
+                step == 1 &&
+                (
+                    <>
+                   <Typography className={classes.onboardPrompt} variant="h3">What is your email address?</Typography>
+                        <Box className={classes.onboardHelper} fontStyle="italic"><Typography fontStyle="italic" variant="h5">(We won't sell your personal information, ever.)</Typography></Box>
+                        <div className={classes.form}>
+                            <TextField
+                                className={classes.formElement}
+                                required
+                                label="Required"
+                                variant="outlined"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                                /><br/>
+                                <TextField
+                                    className={classes.formElement}
+                                    required
+                                    label="Required"
+                                    variant="outlined"
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                /><br/>
+                    </div>  </>
+                )
+            }
+
+             <div className={classes.textRight}>
+                 <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleNext}
+                    className={classes.button}
+                    >Next</Button>
+                    <Button onClick={signUp}>Submit</Button>
+                </div> 
+        </div>
+    )
+}
