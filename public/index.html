@@ -23,7 +23,8 @@
     -->
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
-  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+
   </head>
   <body>
     <div id="root"></div>
@@ -60,10 +61,8 @@
             'remoteConfig',
             'performance',
           ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
         } catch (e) {
           console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
         }
       });
     </script>
