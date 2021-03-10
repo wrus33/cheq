@@ -74,9 +74,25 @@ function OnboardingForm() {
 
     const [step, setStep] = useState(0);
 
-    const [businessName, setBusinessName] = useState('NEW BUSINESS');
-    const [email, setEmail] = useState('test@test.com');
-    const [password, setPassword] = useState('testing');
+    const [businessName, setBusinessName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    function showNext() {
+        switch (step) {
+            case 0:
+                if (businessName.length > 0) {
+                    return true;
+                } 
+                break;
+            case 1:
+                if (email.length > 0 && password.length > 0) {
+                    return true;
+                }
+                break;
+        }
+        return false;
+    }
 
     const handleNext = () => {
         let newStep = step + 1;
@@ -100,7 +116,7 @@ function OnboardingForm() {
     return (
         <div>
             {
-                step == 0 &&
+                step === 0 &&
                 (
                     <>
                    <Typography className={classes.onboardPrompt} variant="h3">What is the name of your business?</Typography>
@@ -120,16 +136,16 @@ function OnboardingForm() {
             }
         
         {
-                step == 1 &&
+                step === 1 &&
                 (
                     <>
-                   <Typography className={classes.onboardPrompt} variant="h3">What is your email address?</Typography>
+                   <Typography className={classes.onboardPrompt} variant="h3">Now, let's create your admin account.</Typography>
                         <Box className={classes.onboardHelper} fontStyle="italic"><Typography fontStyle="italic" variant="h5">(We won't sell your personal information, ever.)</Typography></Box>
                         <div className={classes.form}>
                             <TextField
                                 className={classes.formElement}
                                 required
-                                label="Required"
+                                label="Email"
                                 variant="outlined"
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
@@ -137,10 +153,11 @@ function OnboardingForm() {
                                 <TextField
                                     className={classes.formElement}
                                     required
-                                    label="Required"
+                                    label="Password"
                                     variant="outlined"
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
+                                    type="password"
                                 /><br/>
                     </div>  </>
                 )
@@ -152,6 +169,7 @@ function OnboardingForm() {
                     color="primary"
                     onClick={handleNext}
                     className={classes.button}
+                    disabled={!showNext()}
                     >Next</Button>
                     <Button onClick={signUp}>Submit</Button>
                 </div> 

@@ -1,9 +1,9 @@
-import Onboarding from './Onboarding'
+import Admin from './Admin'
 
 function App() {
   return (
     <div className="App">
-      <Onboarding />
+      <Admin seller="QND0sJpYJUDEemGhCoHr" />
     </div>
   );
 }
