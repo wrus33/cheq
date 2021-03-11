@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Admin() {
+export default function Admin(props) {
   const classes = useStyles();
 
   const [menuPage, setMenuPage] = useState('Sellable Items')
@@ -96,11 +96,11 @@ function MenuPage(props) {
             return (
                 <SellableItems seller={props.seller} />
             );
-            break;
         case "Settings":
             return (
                 <></>
             );
+        default:
+          return 'page not found';
     }
-    return 'page not found';
 }

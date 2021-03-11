@@ -90,8 +90,9 @@ function OnboardingForm() {
                     return true;
                 }
                 break;
+            default:
+                return false;
         }
-        return false;
     }
 
     const handleNext = () => {
