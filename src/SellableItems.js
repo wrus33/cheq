@@ -20,12 +20,15 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
 
 const useRowStyles = makeStyles({
   root: {
     '& > *': {
       borderBottom: 'unset',
-    },
+    }
   },
 });
 
@@ -77,7 +80,7 @@ function Row(props) {
                             {item.value.price}
                           </TableCell>
                           <TableCell align="right" component="th" scope="row">
-                            {item.value.price}
+                            {item.value.stock}
                           </TableCell>
                         </TableRow>
                       ))
@@ -117,6 +120,7 @@ export default function SellableItems(props) {
     const [newItemOpen, setNewItemOpen] = useState(false);
     const [newItemName, setNewItemName] = useState('');
     const [newItemCategory, setNewItemCategory] = useState('');
+    const [newItemPrice, setNewItemPrice] = useState(0);
 
     const handleNewCategoryOpen = () => {
       setNewCategoryOpen(true);
@@ -153,7 +157,7 @@ export default function SellableItems(props) {
     const handleNewItemAdd = () => {
       const data = {
         name: newItemName,
-        price: 99,
+        price: newItemPrice,
         stock: 99,
         category: newItemCategory
       }
@@ -261,9 +265,10 @@ export default function SellableItems(props) {
     open={newItemOpen}
     onClose={handleNewItemClose}
     aria-labelledby="new-category-window"
-    maxWidth={"md"}
+    maxWidth="md"
+    fullWidth
     >
-    <DialogTitle>{"New" + (newCategoryName !== '' ? categories.slice().find(category => category.id === newCategoryName).value.name : "") + "Item"}</DialogTitle>
+    <DialogTitle>{"New " + (newItemCategory !== '' ? categories.slice().find(category => category.id === newItemCategory).value.name + " " : "") + "Item"}</DialogTitle>
     <DialogContent>
       <TextField
         label="Item Name"
@@ -271,6 +276,13 @@ export default function SellableItems(props) {
         fullWidth
         onChange={e => setNewItemName(e.target.value)}
       />
+       <InputLabel style={{marginTop:10}} htmlFor="standard-adornment-amount">Price</InputLabel>
+          <Input
+            id="standard-adornment-amount"
+            value={newItemPrice}
+            onChange={e => setNewItemPrice(e.target.value)}
+            startAdornment={<InputAdornment position="start">$</InputAdornment>}
+          />
     </DialogContent>
     <DialogActions>
       <Button onClick={handleNewItemClose} color="primary">

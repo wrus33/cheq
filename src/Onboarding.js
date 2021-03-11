@@ -34,25 +34,25 @@ const useStyles = makeStyles({
 export default function Onboarding() {
 
     //States
-    const [sellers, setSellers] = useState([]);
+  //  const [sellers, setSellers] = useState([]);
 
 
     //Constants
-    const db = firebase.firestore();
+  //  const db = firebase.firestore();
     const classes = useStyles();
 
-    useEffect(() => {
-        db.collection("sellers")
-            .get()
-            .then((querySnapshot) => {
-                let arr = [];
-                querySnapshot.docs.map((doc) =>
-                    arr.push({ id: doc.id, value: doc.data() })
-                );
-                console.log(arr);
-                setSellers(arr);
-            });
-    }, [db]);
+   // useEffect(() => {
+     //   db.collection("sellers")
+       //     .get()
+         //   .then((querySnapshot) => {
+          //      let arr = [];
+            //    querySnapshot.docs.map((doc) =>
+              //      arr.push({ id: doc.id, value: doc.data() })
+               // );
+               // console.log(arr);
+               // setSellers(arr);
+           // });
+    //}, [db]);
 
 
     return (
@@ -104,12 +104,12 @@ function OnboardingForm() {
         firebase.auth().createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
             // Signed in 
-            var user = userCredential.user;
+            //var user = userCredential.user;
             // ...
         })
         .catch((error) => {
-            var errorCode = error.code;
-            var errorMessage = error.message;
+           // var errorCode = error.code;
+            //var errorMessage = error.message;
             // ..
         });
     }

@@ -12,6 +12,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import SettingsIcon from '@material-ui/icons/Settings';
 import MonotizationOnIcon from '@material-ui/icons/MonetizationOn';
+import ViewComfyIcon from '@material-ui/icons/ViewComfy';
 
 import SellableItems from './SellableItems'
 
@@ -76,11 +77,19 @@ export default function Admin(props) {
         </List>
         <Divider />
         <List>
+            <ListItem onClick={e => setMenuPage("POS Screens")} button>
+              <ListItemIcon><ViewComfyIcon /></ListItemIcon>
+              <ListItemText primary="POS Screens" />
+            </ListItem>
+        </List>
+        <Divider />
+        <List>
             <ListItem onClick={e => setMenuPage("Settings")} button>
               <ListItemIcon><SettingsIcon /></ListItemIcon>
               <ListItemText primary="Settings" />
             </ListItem>
         </List>
+        <Divider />
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
