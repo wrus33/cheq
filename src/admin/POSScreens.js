@@ -13,6 +13,16 @@ import { makeStyles } from '@material-ui/core/styles';
 import DesktopMacIcon from '@material-ui/icons/Apps';
 import MonotizationOnIcon from '@material-ui/icons/MonetizationOn';
 import Launch from '@material-ui/icons/Launch';
+import Fab from '@material-ui/core/Fab'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import TextField from '@material-ui/core/TextField'
+import Input from '@material-ui/core/Input'
+import IconButton from '@material-ui/core/IconButton'
+import SearchIcon from '@material-ui/icons/Search'
+import AddIcon from '@material-ui/icons/Add'
 
 import firebase from 'firebase';
 
@@ -33,39 +43,28 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function POSScreens(props) {
-const db = firebase.firestore();
 
-    const [posScreens, setPOSScreens] = useState([]);
 
     const [currentScreenEditorScreen, setCurrentScreenEditorScreen] = useState('');
 
-    useEffect(() => {
-        
-
-        db.collection("sellers").doc(props.seller).collection("pos screens")
-        .get()
-        .then((querySnapshot) => {
-            let arr = [];
-            querySnapshot.docs.map((doc) =>
-                arr.push({ id: doc.id, value: doc.data() })
-            );
-            setPOSScreens(arr);
-        });
     
-      }, [props.seller, db]);
       
     const handleScreenClick = (screenId) => {
         console.log(screenId);
         setCurrentScreenEditorScreen(screenId);
     }
 
+    const handleBackToPOSScreensClick = () => {
+        setCurrentScreenEditorScreen('');
+    }
+
     return (
         <>
             {
                 currentScreenEditorScreen === '' ? (
-                    <ScreenSelector onScreenClick={handleScreenClick} screens={posScreens} />
+                    <ScreenSelector seller={props.seller} onScreenClick={handleScreenClick} />
                 ) : (
-                    <ScreenEditor seller={props.seller} screen={currentScreenEditorScreen} />
+                    <ScreenEditor handleReturnClick={handleBackToPOSScreensClick} seller={props.seller} screen={currentScreenEditorScreen} />
                 )
             }
         </>
@@ -79,6 +78,7 @@ function ScreenEditor(props) {
 
     const [screenItems, setScreenItems] = useState([]);
     const [sellables, setSellables] = useState([]);
+    const [filteredSellables, setFilteredSellables] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
 
     const [newScreenItemPosition, setNewScreenItemPosition] = useState({x:0,y:0})
@@ -132,6 +132,7 @@ function ScreenEditor(props) {
                 arr.push({ id: doc.id, value: doc.data() })
             );
             setSellables(arr);
+            setFilteredSellables(arr);
             console.log(arr);
         });
     
@@ -142,10 +143,10 @@ function ScreenEditor(props) {
 
         let rowItems = screenItems.slice().filter(item => item.value.position.y === row);
         if (rowItems.filter(item => item.value.position.x === column).length === 0) {
-            return (<Button onClick={e => handleScreenItemClick(e, row, column)} style={{height:100}} variant="outlined" fullWidth>+</Button>);
+            return (<Button onClick={e => handleScreenItemClick(e, row, column)} style={{height:75}} variant="outlined" fullWidth>+</Button>);
         } else {
             let screenItem = screenItems.slice().find(item => item.value.position.y === row && item.value.position.x === column);
-            return (<Button style={{height:100}} variant="contained" color="primary" fullWidth>{screenItem.value.text}</Button>);
+            return (<Button style={{height:75}} variant="contained" color="primary" fullWidth>{screenItem.value.text}</Button>);
         }
       }
 
@@ -172,6 +173,11 @@ function ScreenEditor(props) {
         handleScreenItemClose();
       }
 
+      const handleItemFilterChange = (searchValue) => {
+        let newSellables = sellables.slice().filter(item => String(item.name).includes(searchValue));
+        setFilteredSellables(newSellables);
+      }
+
       const itemPicker = () => (
         <div  
         className={classes.list}        
@@ -180,7 +186,16 @@ function ScreenEditor(props) {
           onKeyDown={toggleDrawer(false)}
         >
           <List>
-            {sellables.map((item, index) => (
+              <ListItem>
+              <Input
+                fullWidth
+                onChange={e => handleItemFilterChange(e.currentTarget.value)}
+                />
+                <IconButton type="submit" className={classes.iconButton} aria-label="search">
+                    <SearchIcon />
+              </IconButton>
+              </ListItem>
+            {filteredSellables.map((item, index) => (
               <ListItem onClick={e => addScreenItem(item.id, item.value.name)} button key={item.id}>
                 <ListItemText primary={item.value.name} />
               </ListItem>
@@ -191,7 +206,11 @@ function ScreenEditor(props) {
 
     return (
         <>
+            
             <Grid spacing={1} container>
+                <Grid item xs={12}>
+                    <Button onClick={e => props.handleReturnClick()} color="primary" variant="contained">Back to POS Screens</Button>
+                </Grid>
             <Drawer anchor="right" open={itemPickerOpen} onClose={toggleDrawer(false)}>
                     {itemPicker()}
                 </Drawer>    
@@ -209,7 +228,7 @@ function ScreenEditor(props) {
                 horizontal: 'center',
                 }}
              >
-                
+               
                  <List component="nav" aria-label="main mailbox folders">
                     <ListItem onClick={e => setItemPickerOpen(true)} button>
                     <ListItemIcon>
@@ -243,20 +262,98 @@ function ScreenEditor(props) {
 function ScreenSelector(props) {
 
     const classes = useStyles();
+    const [newScreenOpen, setNewScreenOpen] = useState(false);
+    const [newScreenName, setNewScreenName] = useState(false);
+    const [posScreens, setPOSScreens] = useState([]);
+
+    const handleNewScreenOpen = () => {
+        setNewScreenOpen(true);
+    }
+    const handleNewScreenClose = () => {
+        setNewScreenOpen(false);  
+    }
+
+    const db = firebase.firestore();
+
+    useEffect(() => {
+        
+
+        db.collection("sellers").doc(props.seller).collection("pos screens")
+        .get()
+        .then((querySnapshot) => {
+            let arr = [];
+            querySnapshot.docs.map((doc) =>
+                arr.push({ id: doc.id, value: doc.data() })
+            );
+            setPOSScreens(arr);
+        });
+    
+      }, [props.seller, db]);
+
+    const getPOSScreens = () => {
+        db.collection("sellers").doc(props.seller).collection("pos screens")
+        .get()
+        .then((querySnapshot) => {
+            let arr = [];
+            querySnapshot.docs.map((doc) =>
+                arr.push({ id: doc.id, value: doc.data() })
+            );
+            setPOSScreens(arr);
+        });
+    }  
+
+    const handleNewScreenAdd = () => {
+        const data = {
+            name: newScreenName
+          }
+    
+          db.collection('sellers').doc(props.seller).collection('pos screens').add(data);
+    
+          setNewScreenOpen(false);
+          getPOSScreens();
+    }
 
     return (
-        
-        <Grid container>            
+        <div style={{textAlign:"right"}}>
+            <Dialog
+                open={newScreenOpen}
+                onClose={handleNewScreenClose}
+                aria-labelledby="new-category-window"
+            >
+                <DialogTitle>{"New Screen"}</DialogTitle>
+                <DialogContent>
+                <TextField
+                    label="Screen Name"
+                    type="text"
+                    fullWidth
+                    onChange={e => setNewScreenName(e.target.value)}
+                />
+                </DialogContent>
+                <DialogActions>
+                <Button onClick={handleNewScreenClose} color="primary">
+                    Cancel
+                </Button>
+                <Button onClick={handleNewScreenAdd} color="primary" autoFocus>
+                    Add
+                </Button>
+                </DialogActions>
+            </Dialog>
+        <Fab style={{margin:25,textAlign:"right"}} color="primary" aria-label="add">
+            <AddIcon onClick={handleNewScreenOpen} />
+        </Fab>
+        <Grid spacing={2} container>  
+                      
             {
-                props.screens.map(screen => 
+                posScreens.map(screen => 
                     <Grid item xs={3}>
-                        <Paper onClick={e => props.onScreenClick(screen.id)} className={classes.screenButton}>
+                        <Paper elevation={3} onClick={e => props.onScreenClick(screen.id)} className={classes.screenButton}>
                         <Typography variant="h5">{screen.value.name}</Typography>
-                            <DesktopMacIcon style={{fontSize: 50}} />
+                            <DesktopMacIcon style={{fontSize: 50}} />                            
                         </Paper>
                     </Grid>
                 )
             }        
         </Grid>
+        </div>
     )
 }
