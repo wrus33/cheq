@@ -15,6 +15,7 @@ import MonotizationOnIcon from '@material-ui/icons/MonetizationOn';
 import ViewComfyIcon from '@material-ui/icons/ViewComfy';
 
 import SellableItems from './SellableItems'
+import POSScreens from './POSScreens'
 
 const drawerWidth = 240;
 
@@ -55,7 +56,7 @@ export default function Admin(props) {
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
           <Typography variant="h6" noWrap>
-            {"cheqOS - " + menuPage } 
+            {menuPage} 
           </Typography>
         </Toolbar>
       </AppBar>
@@ -109,6 +110,10 @@ function MenuPage(props) {
             return (
                 <></>
             );
+        case "POS Screens":
+          return (
+            <POSScreens seller={props.seller} />
+          );
         default:
           return 'page not found';
     }

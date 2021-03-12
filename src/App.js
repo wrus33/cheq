@@ -1,4 +1,4 @@
-import Admin from './Admin'
+import Admin from './admin/Admin.js'
 
 function App() {
   return (

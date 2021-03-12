@@ -162,7 +162,7 @@ export default function SellableItems(props) {
         category: newItemCategory
       }
 
-      db.collection('sellers').doc(props.seller).collection('items').add(data);
+      db.collection('sellers').doc(props.seller).collection('sellables').add(data);
 
       setNewItemOpen(false);
       getItems();
@@ -182,7 +182,7 @@ export default function SellableItems(props) {
     });
 
     const getItems = (() => {
-      db.collection("sellers").doc(props.seller).collection("items")
+      db.collection("sellers").doc(props.seller).collection("sellables")
             .get()
             .then((querySnapshot) => {
                 let arr = [];
@@ -208,7 +208,7 @@ export default function SellableItems(props) {
           setCategories(arr);
       });
 
-        db.collection("sellers").doc(props.seller).collection("items")
+        db.collection("sellers").doc(props.seller).collection("sellables")
             .get()
             .then((querySnapshot) => {
                 let arr = [];
